@@ -1,25 +1,49 @@
+using System.IO.Compression;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Common Configs
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+builder.Services.AddRouting();
+builder.Services.AddMvc(o =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    o.EnableEndpointRouting = false;
+});
+builder.Services.AddControllers().AddJsonOptions(o =>
+{
+    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
+// Config Response Compression
+builder.Services.AddResponseCompression();
+builder.Services.Configure<GzipCompressionProviderOptions>(o =>
+{
+    o.Level = CompressionLevel.Fastest;
+});
+
+//Config Database
+builder.Services.AddEntityFrameworkSqlServer();
+builder.Services.AddDbContext<AppDbContext>((s, o) =>
+{
+    o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    o.UseInternalServiceProvider(s);
+    o.EnableDetailedErrors(true);
+    o.EnableSensitiveDataLogging(true);
+});
+
+// Config App Methods
+var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
