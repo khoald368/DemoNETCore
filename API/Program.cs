@@ -31,11 +31,12 @@ builder.Services.Configure<GzipCompressionProviderOptions>(o =>
 builder.Services.AddEntityFrameworkSqlServer();
 builder.Services.AddDbContext<AppDbContext>((s, o) =>
 {
-    o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), c => c.CommandTimeout(300));
     o.UseInternalServiceProvider(s);
     o.EnableDetailedErrors(true);
     o.EnableSensitiveDataLogging(true);
 });
+
 
 // Config App Methods
 var app = builder.Build();
