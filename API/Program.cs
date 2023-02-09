@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text.Json.Serialization;
+using API.Services;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
@@ -37,6 +38,8 @@ builder.Services.AddDbContext<AppDbContext>((s, o) =>
     o.EnableSensitiveDataLogging(true);
 });
 
+// Inject Services
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // Config App Methods
 var app = builder.Build();

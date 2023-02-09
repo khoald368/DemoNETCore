@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI.Models
 {
@@ -12,5 +13,7 @@ namespace WebAPI.Models
         {
             base.OnModelCreating(modelBuilder);
         }
+
+        public virtual DbSet<Product> Products { get; set; }
     }
 }
